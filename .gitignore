@@ -1,0 +1,21 @@
+# Build output
+target/
+build/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
