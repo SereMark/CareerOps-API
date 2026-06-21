@@ -1,21 +1,19 @@
-# Build output
 target/
-build/
 
-# Maven wrapper
-.mvn/wrapper/maven-wrapper.jar
+Private_Infos/
 
-# Local environment / secrets
 .env
 .env.*
 !.env.example
 
-# Logs
-logs/
 *.log
 
-# IntelliJ IDEA
 .idea/
-*.iws
 *.iml
-*.ipr
+.classpath
+.project
+.settings/
+.vscode/
+
+.DS_Store
+Thumbs.db

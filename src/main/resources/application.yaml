@@ -1,3 +1,22 @@
 spring:
   application:
     name: careerops-api
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:careerops}}
+    username: ${DB_USERNAME:${POSTGRES_USER:careerops}}
+    password: ${DB_PASSWORD:${POSTGRES_PASSWORD:careerops}}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
