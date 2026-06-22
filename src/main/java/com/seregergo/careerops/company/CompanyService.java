@@ -1,6 +1,7 @@
 package com.seregergo.careerops.company;
 
-import org.hibernate.exception.ConstraintViolationException;
+import com.seregergo.careerops.common.DatabaseConstraint;
+import com.seregergo.careerops.common.TextNormalizer;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,23 +91,11 @@ public class CompanyService {
 			return companyRepository.saveAndFlush(company);
 		} catch (DataIntegrityViolationException exception) {
 			// A concurrent request can pass the earlier check, so the database remains the final guard.
-			if (violatesUniqueNameConstraint(exception)) {
+			if (DatabaseConstraint.causedBy(exception, UNIQUE_NAME_CONSTRAINT)) {
 				throw new DuplicateCompanyNameException(displayName);
 			}
 			throw exception;
 		}
-	}
-
-	private static boolean violatesUniqueNameConstraint(Throwable exception) {
-		Throwable cause = exception;
-		while (cause != null) {
-			if (cause instanceof ConstraintViolationException constraintViolation
-					&& UNIQUE_NAME_CONSTRAINT.equals(constraintViolation.getConstraintName())) {
-				return true;
-			}
-			cause = cause.getCause();
-		}
-		return false;
 	}
 
 	private static NormalizedCompanyInput normalize(CompanyRequest request) {
@@ -115,17 +104,9 @@ public class CompanyService {
 		return new NormalizedCompanyInput(
 				name,
 				normalizedName,
-				blankToNull(request.websiteUrl()),
-				blankToNull(request.notes())
+				TextNormalizer.trimToNull(request.websiteUrl()),
+				TextNormalizer.trimToNull(request.notes())
 		);
-	}
-
-	private static String blankToNull(String value) {
-		if (value == null) {
-			return null;
-		}
-		String stripped = value.strip();
-		return stripped.isEmpty() ? null : stripped;
 	}
 
 	private record NormalizedCompanyInput(String name, String normalizedName, String websiteUrl, String notes) {
