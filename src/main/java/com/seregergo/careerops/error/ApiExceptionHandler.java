@@ -2,6 +2,7 @@ package com.seregergo.careerops.error;
 
 import com.seregergo.careerops.company.CompanyNotFoundException;
 import com.seregergo.careerops.company.DuplicateCompanyNameException;
+import com.seregergo.careerops.jobposting.JobPostingNotFoundException;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -27,6 +28,11 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(DuplicateCompanyNameException.class)
 	ResponseEntity<ProblemDetail> handleDuplicate(DuplicateCompanyNameException exception) {
 		return problem(ApiError.COMPANY_NAME_CONFLICT, exception.getMessage());
+	}
+
+	@ExceptionHandler(JobPostingNotFoundException.class)
+	ResponseEntity<ProblemDetail> handleJobPostingNotFound(JobPostingNotFoundException exception) {
+		return problem(ApiError.JOB_POSTING_NOT_FOUND, exception.getMessage());
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)

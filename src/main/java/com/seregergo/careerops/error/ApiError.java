@@ -9,6 +9,7 @@ enum ApiError {
 
 	COMPANY_NOT_FOUND(HttpStatus.NOT_FOUND, "Company not found"),
 	COMPANY_NAME_CONFLICT(HttpStatus.CONFLICT, "Company name conflict"),
+	JOB_POSTING_NOT_FOUND(HttpStatus.NOT_FOUND, "Job posting not found"),
 	VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "Request validation failed"),
 	INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "Invalid parameter"),
 	MALFORMED_REQUEST(HttpStatus.BAD_REQUEST, "Malformed request");
