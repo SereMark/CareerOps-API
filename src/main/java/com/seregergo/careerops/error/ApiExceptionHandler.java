@@ -1,5 +1,7 @@
 package com.seregergo.careerops.error;
 
+import com.seregergo.careerops.application.DuplicateJobApplicationException;
+import com.seregergo.careerops.application.JobApplicationNotFoundException;
 import com.seregergo.careerops.company.CompanyNotFoundException;
 import com.seregergo.careerops.company.DuplicateCompanyNameException;
 import com.seregergo.careerops.jobposting.JobPostingNotFoundException;
@@ -33,6 +35,20 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(JobPostingNotFoundException.class)
 	ResponseEntity<ProblemDetail> handleJobPostingNotFound(JobPostingNotFoundException exception) {
 		return problem(ApiError.JOB_POSTING_NOT_FOUND, exception.getMessage());
+	}
+
+	@ExceptionHandler(JobApplicationNotFoundException.class)
+	ResponseEntity<ProblemDetail> handleJobApplicationNotFound(
+			JobApplicationNotFoundException exception
+	) {
+		return problem(ApiError.JOB_APPLICATION_NOT_FOUND, exception.getMessage());
+	}
+
+	@ExceptionHandler(DuplicateJobApplicationException.class)
+	ResponseEntity<ProblemDetail> handleDuplicateApplication(
+			DuplicateJobApplicationException exception
+	) {
+		return problem(ApiError.JOB_APPLICATION_CONFLICT, exception.getMessage());
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
