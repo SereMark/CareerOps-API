@@ -49,5 +49,16 @@ public class JobApplicationController {
 		return applicationService.get(id);
 	}
 
+	@PostMapping("/{id}/status")
+	public JobApplicationResponse transition(
+			@PathVariable UUID id,
+			@Valid @RequestBody StatusTransitionRequest request
+	) {
+		return applicationService.transition(id, request);
+	}
 
+	@GetMapping("/{id}/history")
+	public List<ApplicationStatusEventResponse> history(@PathVariable UUID id) {
+		return applicationService.history(id);
+	}
 }

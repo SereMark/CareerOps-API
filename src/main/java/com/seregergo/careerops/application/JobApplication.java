@@ -55,6 +55,14 @@ public class JobApplication {
 		this.notes = notes;
 	}
 
+	ApplicationStatus transitionTo(ApplicationStatus targetStatus) {
+		ApplicationStatus previousStatus = status;
+		if (!previousStatus.canTransitionTo(targetStatus)) {
+			throw new InvalidApplicationStatusTransitionException(previousStatus, targetStatus);
+		}
+		status = targetStatus;
+		return previousStatus;
+	}
 
 	public UUID getId() {
 		return id;

@@ -1,6 +1,8 @@
 package com.seregergo.careerops.error;
 
+import com.seregergo.careerops.application.ApplicationStatusConflictException;
 import com.seregergo.careerops.application.DuplicateJobApplicationException;
+import com.seregergo.careerops.application.InvalidApplicationStatusTransitionException;
 import com.seregergo.careerops.application.JobApplicationNotFoundException;
 import com.seregergo.careerops.company.CompanyNotFoundException;
 import com.seregergo.careerops.company.DuplicateCompanyNameException;
@@ -49,6 +51,20 @@ public class ApiExceptionHandler {
 			DuplicateJobApplicationException exception
 	) {
 		return problem(ApiError.JOB_APPLICATION_CONFLICT, exception.getMessage());
+	}
+
+	@ExceptionHandler(InvalidApplicationStatusTransitionException.class)
+	ResponseEntity<ProblemDetail> handleInvalidStatusTransition(
+			InvalidApplicationStatusTransitionException exception
+	) {
+		return problem(ApiError.INVALID_STATUS_TRANSITION, exception.getMessage());
+	}
+
+	@ExceptionHandler(ApplicationStatusConflictException.class)
+	ResponseEntity<ProblemDetail> handleApplicationStatusConflict(
+			ApplicationStatusConflictException exception
+	) {
+		return problem(ApiError.APPLICATION_STATUS_CONFLICT, exception.getMessage());
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)

@@ -16,6 +16,9 @@ import java.util.UUID;
 public class JobApplicationService {
 
 	private static final String UNIQUE_POSTING_CONSTRAINT = "uk_job_applications_posting";
+	private static final String UNIQUE_EVENT_TARGET_CONSTRAINT =
+			"uk_application_status_events_target";
+
 	private final JobApplicationRepository applicationRepository;
 	private final ApplicationStatusEventRepository eventRepository;
 	private final JobPostingRepository jobPostingRepository;
@@ -77,7 +80,34 @@ public class JobApplicationService {
 		return JobApplicationResponse.from(findApplication(id));
 	}
 
+	@Transactional
+	public JobApplicationResponse transition(UUID id, StatusTransitionRequest request) {
+		JobApplication application = findApplication(id);
+		ApplicationStatus currentStatus = application.transitionTo(request.targetStatus());
+		try {
+			applicationRepository.saveAndFlush(application);
+			eventRepository.saveAndFlush(new ApplicationStatusEvent(
+					application,
+					currentStatus,
+					request.targetStatus(),
+					TextNormalizer.trimToNull(request.note())
+			));
+		} catch (DataIntegrityViolationException exception) {
+			if (DatabaseConstraint.causedBy(exception, UNIQUE_EVENT_TARGET_CONSTRAINT)) {
+				throw new ApplicationStatusConflictException();
+			}
+			throw exception;
+		}
+		return JobApplicationResponse.from(application);
+	}
 
+	@Transactional(readOnly = true)
+	public List<ApplicationStatusEventResponse> history(UUID id) {
+		findApplication(id);
+		return eventRepository.findAllByApplicationIdOrderByOccurredAtAscIdAsc(id).stream()
+				.map(ApplicationStatusEventResponse::from)
+				.toList();
+	}
 
 	private JobApplication findApplication(UUID id) {
 		return applicationRepository.findById(id)

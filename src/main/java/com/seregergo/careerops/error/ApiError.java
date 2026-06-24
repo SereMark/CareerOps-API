@@ -12,6 +12,8 @@ enum ApiError {
 	JOB_POSTING_NOT_FOUND(HttpStatus.NOT_FOUND, "Job posting not found"),
 	JOB_APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Job application not found"),
 	JOB_APPLICATION_CONFLICT(HttpStatus.CONFLICT, "Job application conflict"),
+	APPLICATION_STATUS_CONFLICT(HttpStatus.CONFLICT, "Application status conflict"),
+	INVALID_STATUS_TRANSITION(HttpStatus.CONFLICT, "Invalid application status transition"),
 	VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "Request validation failed"),
 	INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "Invalid parameter"),
 	MALFORMED_REQUEST(HttpStatus.BAD_REQUEST, "Malformed request");
