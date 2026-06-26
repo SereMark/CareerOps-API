@@ -34,6 +34,17 @@ public class JobPostingService {
 				input.sourceUrl(),
 				input.location(),
 				input.workMode(),
+				input.targetLane(),
+				input.seniority(),
+				input.salaryMinGrossHuf(),
+				input.salaryMaxGrossHuf(),
+				input.roleFitScore(),
+				input.mentoringScore(),
+				input.salaryScore(),
+				input.engineeringPracticesScore(),
+				input.learningSignalScore(),
+				input.hybridFitScore(),
+				input.hardVetoReason(),
 				input.notes()
 		);
 		return JobPostingResponse.from(jobPostingRepository.saveAndFlush(jobPosting));
@@ -66,6 +77,17 @@ public class JobPostingService {
 				input.sourceUrl(),
 				input.location(),
 				input.workMode(),
+				input.targetLane(),
+				input.seniority(),
+				input.salaryMinGrossHuf(),
+				input.salaryMaxGrossHuf(),
+				input.roleFitScore(),
+				input.mentoringScore(),
+				input.salaryScore(),
+				input.engineeringPracticesScore(),
+				input.learningSignalScore(),
+				input.hybridFitScore(),
+				input.hardVetoReason(),
 				input.notes()
 		);
 		return JobPostingResponse.from(jobPostingRepository.saveAndFlush(jobPosting));
@@ -87,8 +109,23 @@ public class JobPostingService {
 				TextNormalizer.trimToNull(request.sourceUrl()),
 				TextNormalizer.trimToNull(request.location()),
 				request.workMode(),
+				request.targetLane() == null ? TargetLane.JAVA_BACKEND : request.targetLane(),
+				request.seniority() == null ? Seniority.UNKNOWN : request.seniority(),
+				request.salaryMinGrossHuf(),
+				request.salaryMaxGrossHuf(),
+				scoreOrZero(request.roleFitScore()),
+				scoreOrZero(request.mentoringScore()),
+				scoreOrZero(request.salaryScore()),
+				scoreOrZero(request.engineeringPracticesScore()),
+				scoreOrZero(request.learningSignalScore()),
+				scoreOrZero(request.hybridFitScore()),
+				TextNormalizer.trimToNull(request.hardVetoReason()),
 				TextNormalizer.trimToNull(request.notes())
 		);
+	}
+
+	private static int scoreOrZero(Integer score) {
+		return score == null ? 0 : score;
 	}
 
 	private record JobPostingInput(
@@ -96,6 +133,17 @@ public class JobPostingService {
 			String sourceUrl,
 			String location,
 			WorkMode workMode,
+			TargetLane targetLane,
+			Seniority seniority,
+			Integer salaryMinGrossHuf,
+			Integer salaryMaxGrossHuf,
+			int roleFitScore,
+			int mentoringScore,
+			int salaryScore,
+			int engineeringPracticesScore,
+			int learningSignalScore,
+			int hybridFitScore,
+			String hardVetoReason,
 			String notes
 	) {
 	}

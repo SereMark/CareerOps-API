@@ -115,11 +115,23 @@ class CareerOpsPostgreSqlIntegrationTest {
 								  "title": "Java Backend Developer",
 								  "sourceUrl": "https://jobs.example/java",
 								  "location": "Budapest",
-								  "workMode": "HYBRID"
+								  "workMode": "HYBRID",
+								  "targetLane": "JAVA_BACKEND",
+								  "seniority": "JUNIOR",
+								  "salaryMinGrossHuf": 910000,
+								  "salaryMaxGrossHuf": 1120000,
+								  "roleFitScore": 28,
+								  "mentoringScore": 20,
+								  "salaryScore": 18,
+								  "engineeringPracticesScore": 8,
+								  "learningSignalScore": 8,
+								  "hybridFitScore": 5
 								}
 								""".formatted(companyId)))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.companyName").value("Acme"))
+				.andExpect(jsonPath("$.triageScore").value(87))
+				.andExpect(jsonPath("$.triagePriority").value("PRIORITIZE"))
 				.andReturn()
 				.getResponse()
 				.getContentAsString());
@@ -170,6 +182,17 @@ class CareerOpsPostgreSqlIntegrationTest {
 				null,
 				"Budapest",
 				WorkMode.HYBRID,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
 				null
 		));
 		JobApplicationResponse created = applicationService.create(
@@ -201,6 +224,17 @@ class CareerOpsPostgreSqlIntegrationTest {
 				null,
 				"Budapest",
 				WorkMode.HYBRID,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
 				null
 		));
 		JobApplicationResponse created = applicationService.create(
