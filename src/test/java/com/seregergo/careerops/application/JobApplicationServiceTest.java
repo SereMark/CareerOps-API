@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -122,6 +123,25 @@ class JobApplicationServiceTest {
 		)).isInstanceOf(InvalidApplicationStatusTransitionException.class);
 
 		verify(applicationRepository, never()).saveAndFlush(application);
+		verify(eventRepository, never()).saveAndFlush(any());
+	}
+
+	@Test
+	void transitionMapsAStaleUpdateToADomainConflict() {
+		UUID applicationId = UUID.randomUUID();
+		JobApplication application = new JobApplication(jobPosting, null);
+		when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+		when(applicationRepository.saveAndFlush(application))
+				.thenThrow(new ObjectOptimisticLockingFailureException(
+						JobApplication.class,
+						applicationId
+				));
+
+		assertThatThrownBy(() -> applicationService.transition(
+				applicationId,
+				new StatusTransitionRequest(ApplicationStatus.APPLIED, null)
+		)).isInstanceOf(ApplicationStatusConflictException.class);
+
 		verify(eventRepository, never()).saveAndFlush(any());
 	}
 

@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -37,6 +38,9 @@ public class JobApplication {
 	@Column(length = 5000)
 	private String notes;
 
+	@Version
+	@Column(nullable = false)
+	private long version;
 
 	@Column(name = "created_at", nullable = false, updatable = false)
 	@CreationTimestamp

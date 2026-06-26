@@ -6,6 +6,7 @@ import com.seregergo.careerops.jobposting.JobPosting;
 import com.seregergo.careerops.jobposting.JobPostingNotFoundException;
 import com.seregergo.careerops.jobposting.JobPostingRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,6 +93,8 @@ public class JobApplicationService {
 					request.targetStatus(),
 					TextNormalizer.trimToNull(request.note())
 			));
+		} catch (ObjectOptimisticLockingFailureException exception) {
+			throw new ApplicationStatusConflictException();
 		} catch (DataIntegrityViolationException exception) {
 			if (DatabaseConstraint.causedBy(exception, UNIQUE_EVENT_TARGET_CONSTRAINT)) {
 				throw new ApplicationStatusConflictException();

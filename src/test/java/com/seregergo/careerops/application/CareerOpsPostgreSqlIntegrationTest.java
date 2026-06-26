@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -191,6 +192,32 @@ class CareerOpsPostgreSqlIntegrationTest {
 		assertThat(applicationService.get(created.id()).status()).isEqualTo(ApplicationStatus.SAVED);
 	}
 
+	@Test
+	void optimisticLockingRejectsAStaleApplicationUpdate() {
+		CompanyResponse company = companyService.create(new CompanyRequest("Acme", null, null));
+		JobPostingResponse posting = jobPostingService.create(new JobPostingRequest(
+				company.id(),
+				"Java Developer",
+				null,
+				"Budapest",
+				WorkMode.HYBRID,
+				null
+		));
+		JobApplicationResponse created = applicationService.create(
+				new JobApplicationRequest(posting.id(), null)
+		);
+
+		JobApplication firstCopy = applicationRepository.findById(created.id()).orElseThrow();
+		JobApplication staleCopy = applicationRepository.findById(created.id()).orElseThrow();
+		firstCopy.transitionTo(ApplicationStatus.APPLIED);
+		staleCopy.transitionTo(ApplicationStatus.WITHDRAWN);
+
+		applicationRepository.saveAndFlush(firstCopy);
+
+		assertThatThrownBy(() -> applicationRepository.saveAndFlush(staleCopy))
+				.isInstanceOf(ObjectOptimisticLockingFailureException.class);
+		assertThat(applicationService.get(created.id()).status()).isEqualTo(ApplicationStatus.APPLIED);
+	}
 
 
 	private void transition(UUID applicationId, ApplicationStatus status, String note) throws Exception {
