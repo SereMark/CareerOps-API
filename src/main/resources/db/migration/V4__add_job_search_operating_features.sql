@@ -48,3 +48,33 @@ ALTER TABLE job_postings
         CHECK (learning_signal_score BETWEEN 0 AND 10),
     ADD CONSTRAINT chk_job_postings_hybrid_fit_score
         CHECK (hybrid_fit_score BETWEEN 0 AND 5);
+
+CREATE TABLE next_actions (
+    id UUID PRIMARY KEY,
+    application_id UUID NOT NULL,
+    type VARCHAR(40) NOT NULL,
+    due_date DATE NOT NULL,
+    completed_at TIMESTAMP WITH TIME ZONE,
+    notes VARCHAR(2000),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    CONSTRAINT fk_next_actions_application
+        FOREIGN KEY (application_id) REFERENCES job_applications (id),
+    CONSTRAINT chk_next_actions_type
+        CHECK (type IN (
+            'TAILOR_CV',
+            'APPLY',
+            'FOLLOW_UP',
+            'PREPARE_SCREENING',
+            'PREPARE_TECHNICAL_INTERVIEW',
+            'SEND_THANK_YOU',
+            'NEGOTIATE',
+            'OTHER'
+        ))
+);
+
+CREATE INDEX idx_next_actions_due_open
+    ON next_actions (completed_at, due_date);
+
+CREATE INDEX idx_next_actions_application_due
+    ON next_actions (application_id, due_date);

@@ -7,6 +7,7 @@ import com.seregergo.careerops.application.JobApplicationNotFoundException;
 import com.seregergo.careerops.company.CompanyNotFoundException;
 import com.seregergo.careerops.company.DuplicateCompanyNameException;
 import com.seregergo.careerops.jobposting.JobPostingNotFoundException;
+import com.seregergo.careerops.nextaction.NextActionNotFoundException;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -65,6 +66,11 @@ public class ApiExceptionHandler {
 			ApplicationStatusConflictException exception
 	) {
 		return problem(ApiError.APPLICATION_STATUS_CONFLICT, exception.getMessage());
+	}
+
+	@ExceptionHandler(NextActionNotFoundException.class)
+	ResponseEntity<ProblemDetail> handleNextActionNotFound(NextActionNotFoundException exception) {
+		return problem(ApiError.NEXT_ACTION_NOT_FOUND, exception.getMessage());
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
