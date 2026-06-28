@@ -9,6 +9,8 @@ import com.seregergo.careerops.company.DuplicateCompanyNameException;
 import com.seregergo.careerops.interview.InterviewRoundNotFoundException;
 import com.seregergo.careerops.jobposting.JobPostingNotFoundException;
 import com.seregergo.careerops.nextaction.NextActionNotFoundException;
+import com.seregergo.careerops.offer.DuplicateOfferException;
+import com.seregergo.careerops.offer.OfferNotFoundException;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -79,6 +81,16 @@ public class ApiExceptionHandler {
 			InterviewRoundNotFoundException exception
 	) {
 		return problem(ApiError.INTERVIEW_ROUND_NOT_FOUND, exception.getMessage());
+	}
+
+	@ExceptionHandler(OfferNotFoundException.class)
+	ResponseEntity<ProblemDetail> handleOfferNotFound(OfferNotFoundException exception) {
+		return problem(ApiError.OFFER_NOT_FOUND, exception.getMessage());
+	}
+
+	@ExceptionHandler(DuplicateOfferException.class)
+	ResponseEntity<ProblemDetail> handleDuplicateOffer(DuplicateOfferException exception) {
+		return problem(ApiError.OFFER_CONFLICT, exception.getMessage());
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)

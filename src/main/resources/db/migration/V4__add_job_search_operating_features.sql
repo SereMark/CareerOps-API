@@ -115,3 +115,27 @@ CREATE INDEX idx_interview_rounds_application_scheduled
 
 CREATE INDEX idx_interview_rounds_scheduled
     ON interview_rounds (scheduled_at);
+
+CREATE TABLE offers (
+    id UUID PRIMARY KEY,
+    application_id UUID NOT NULL,
+    gross_monthly_huf INTEGER NOT NULL,
+    benefits VARCHAR(5000),
+    hybrid_policy VARCHAR(1000),
+    review_promise VARCHAR(1000),
+    expires_at TIMESTAMP WITH TIME ZONE,
+    decision VARCHAR(30) NOT NULL,
+    decision_notes VARCHAR(5000),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    CONSTRAINT uk_offers_application UNIQUE (application_id),
+    CONSTRAINT fk_offers_application
+        FOREIGN KEY (application_id) REFERENCES job_applications (id),
+    CONSTRAINT chk_offers_gross_monthly_huf
+        CHECK (gross_monthly_huf >= 0),
+    CONSTRAINT chk_offers_decision
+        CHECK (decision IN ('PENDING', 'NEGOTIATING', 'ACCEPTED', 'DECLINED'))
+);
+
+CREATE INDEX idx_offers_decision
+    ON offers (decision);
