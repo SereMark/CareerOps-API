@@ -15,6 +15,7 @@ enum ApiError {
 	APPLICATION_STATUS_CONFLICT(HttpStatus.CONFLICT, "Application status conflict"),
 	INVALID_STATUS_TRANSITION(HttpStatus.CONFLICT, "Invalid application status transition"),
 	NEXT_ACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Next action not found"),
+	INTERVIEW_ROUND_NOT_FOUND(HttpStatus.NOT_FOUND, "Interview round not found"),
 	VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "Request validation failed"),
 	INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "Invalid parameter"),
 	MALFORMED_REQUEST(HttpStatus.BAD_REQUEST, "Malformed request");

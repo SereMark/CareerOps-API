@@ -78,3 +78,40 @@ CREATE INDEX idx_next_actions_due_open
 
 CREATE INDEX idx_next_actions_application_due
     ON next_actions (application_id, due_date);
+
+CREATE TABLE interview_rounds (
+    id UUID PRIMARY KEY,
+    application_id UUID NOT NULL,
+    round_type VARCHAR(40) NOT NULL,
+    scheduled_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    format VARCHAR(30) NOT NULL,
+    outcome VARCHAR(30) NOT NULL,
+    contact_name VARCHAR(200),
+    prep_notes VARCHAR(5000),
+    questions_asked VARCHAR(5000),
+    follow_up_sent_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    CONSTRAINT fk_interview_rounds_application
+        FOREIGN KEY (application_id) REFERENCES job_applications (id),
+    CONSTRAINT chk_interview_rounds_type
+        CHECK (round_type IN (
+            'HR_SCREEN',
+            'TECHNICAL_SCREEN',
+            'TAKE_HOME',
+            'ONSITE',
+            'FINAL',
+            'OFFER_CALL',
+            'OTHER'
+        )),
+    CONSTRAINT chk_interview_rounds_format
+        CHECK (format IN ('PHONE', 'VIDEO', 'ONSITE', 'TAKE_HOME', 'OTHER')),
+    CONSTRAINT chk_interview_rounds_outcome
+        CHECK (outcome IN ('SCHEDULED', 'PASSED', 'FAILED', 'CANCELLED', 'UNKNOWN'))
+);
+
+CREATE INDEX idx_interview_rounds_application_scheduled
+    ON interview_rounds (application_id, scheduled_at);
+
+CREATE INDEX idx_interview_rounds_scheduled
+    ON interview_rounds (scheduled_at);

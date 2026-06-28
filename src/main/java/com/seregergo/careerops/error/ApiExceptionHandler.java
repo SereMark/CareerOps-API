@@ -6,6 +6,7 @@ import com.seregergo.careerops.application.InvalidApplicationStatusTransitionExc
 import com.seregergo.careerops.application.JobApplicationNotFoundException;
 import com.seregergo.careerops.company.CompanyNotFoundException;
 import com.seregergo.careerops.company.DuplicateCompanyNameException;
+import com.seregergo.careerops.interview.InterviewRoundNotFoundException;
 import com.seregergo.careerops.jobposting.JobPostingNotFoundException;
 import com.seregergo.careerops.nextaction.NextActionNotFoundException;
 import org.springframework.http.ProblemDetail;
@@ -71,6 +72,13 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(NextActionNotFoundException.class)
 	ResponseEntity<ProblemDetail> handleNextActionNotFound(NextActionNotFoundException exception) {
 		return problem(ApiError.NEXT_ACTION_NOT_FOUND, exception.getMessage());
+	}
+
+	@ExceptionHandler(InterviewRoundNotFoundException.class)
+	ResponseEntity<ProblemDetail> handleInterviewRoundNotFound(
+			InterviewRoundNotFoundException exception
+	) {
+		return problem(ApiError.INTERVIEW_ROUND_NOT_FOUND, exception.getMessage());
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
