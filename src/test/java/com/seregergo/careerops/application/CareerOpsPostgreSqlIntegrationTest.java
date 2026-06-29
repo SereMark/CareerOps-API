@@ -161,6 +161,53 @@ class CareerOpsPostgreSqlIntegrationTest {
 		transition(applicationId, ApplicationStatus.APPLIED, "Submitted on company site");
 		transition(applicationId, ApplicationStatus.SCREENING, "Recruiter call booked");
 
+		UUID nextActionId = responseId(mockMvc.perform(post("/api/next-actions")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "applicationId": "%s",
+								  "type": "PREPARE_SCREENING",
+								  "dueDate": "2026-07-03",
+								  "notes": "Review CV and company notes"
+								}
+								""".formatted(applicationId)))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.type").value("PREPARE_SCREENING"))
+				.andReturn()
+				.getResponse()
+				.getContentAsString());
+
+		mockMvc.perform(post("/api/next-actions/{id}/complete", nextActionId))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.completedAt").exists());
+
+		mockMvc.perform(post("/api/interview-rounds")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "applicationId": "%s",
+								  "roundType": "HR_SCREEN",
+								  "scheduledAt": "2026-07-04T09:00:00Z",
+								  "format": "VIDEO",
+								  "contactName": "Recruiter"
+								}
+								""".formatted(applicationId)))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.outcome").value("SCHEDULED"));
+
+		mockMvc.perform(post("/api/offers")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								  "applicationId": "%s",
+								  "grossMonthlyHuf": 980000,
+								  "hybridPolicy": "Budapest hybrid",
+								  "decision": "PENDING"
+								}
+								""".formatted(applicationId)))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.decision").value("PENDING"));
+
 		mockMvc.perform(get("/api/job-applications/{id}/history", applicationId))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.length()").value(3))
@@ -171,6 +218,11 @@ class CareerOpsPostgreSqlIntegrationTest {
 		assertThat(applicationService.get(applicationId).companyName()).isEqualTo("Acme");
 		assertThat(applicationService.get(applicationId).status())
 				.isEqualTo(ApplicationStatus.SCREENING);
+
+		mockMvc.perform(get("/api/dashboard"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.applicationsByStatus.SCREENING").value(1))
+				.andExpect(jsonPath("$.pendingOffers").value(1));
 	}
 
 	@Test

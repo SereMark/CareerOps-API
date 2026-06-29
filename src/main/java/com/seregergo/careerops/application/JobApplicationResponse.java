@@ -17,7 +17,7 @@ public record JobApplicationResponse(
 		Instant updatedAt
 ) {
 
-	static JobApplicationResponse from(JobApplication application) {
+	public static JobApplicationResponse from(JobApplication application) {
 		JobPosting jobPosting = application.getJobPosting();
 		return new JobApplicationResponse(
 				application.getId(),
