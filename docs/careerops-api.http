@@ -1,0 +1,135 @@
+@baseUrl = http://localhost:8080
+@companyId = replace-after-create-company
+@postingId = replace-after-create-posting
+@applicationId = replace-after-create-application
+@nextActionId = replace-after-create-next-action
+@interviewRoundId = replace-after-create-interview
+@offerId = replace-after-create-offer
+
+### Health check
+GET {{baseUrl}}/actuator/health
+
+### Create a company
+POST {{baseUrl}}/api/companies
+Content-Type: application/json
+
+{
+  "name": "Example Engineering",
+  "websiteUrl": "https://example.com",
+  "notes": "Product company in Budapest"
+}
+
+### Add a job posting with fit scores
+POST {{baseUrl}}/api/job-postings
+Content-Type: application/json
+
+{
+  "companyId": "{{companyId}}",
+  "title": "Junior Java Backend Developer",
+  "sourceUrl": "https://example.com/careers/java-backend",
+  "location": "Budapest",
+  "workMode": "HYBRID",
+  "targetLane": "JAVA_BACKEND",
+  "seniority": "JUNIOR",
+  "salaryMinGrossHuf": 910000,
+  "salaryMaxGrossHuf": 1120000,
+  "roleFitScore": 28,
+  "mentoringScore": 20,
+  "salaryScore": 18,
+  "engineeringPracticesScore": 8,
+  "learningSignalScore": 8,
+  "hybridFitScore": 5,
+  "notes": "Spring Boot and PostgreSQL"
+}
+
+### Create an application
+POST {{baseUrl}}/api/job-applications
+Content-Type: application/json
+
+{
+  "jobPostingId": "{{postingId}}",
+  "notes": "CV tailored and ready"
+}
+
+### Move application to APPLIED
+POST {{baseUrl}}/api/job-applications/{{applicationId}}/status
+Content-Type: application/json
+
+{
+  "targetStatus": "APPLIED",
+  "note": "Submitted through the company careers page"
+}
+
+### Move application to SCREENING
+POST {{baseUrl}}/api/job-applications/{{applicationId}}/status
+Content-Type: application/json
+
+{
+  "targetStatus": "SCREENING",
+  "note": "Recruiter call booked for Friday"
+}
+
+### Add a next action
+POST {{baseUrl}}/api/next-actions
+Content-Type: application/json
+
+{
+  "applicationId": "{{applicationId}}",
+  "type": "PREPARE_SCREENING",
+  "dueDate": "2026-07-03",
+  "notes": "Review the job ad, CV, and company notes"
+}
+
+### Complete a next action
+POST {{baseUrl}}/api/next-actions/{{nextActionId}}/complete
+
+### Schedule an interview round
+POST {{baseUrl}}/api/interview-rounds
+Content-Type: application/json
+
+{
+  "applicationId": "{{applicationId}}",
+  "roundType": "HR_SCREEN",
+  "scheduledAt": "2026-07-04T09:00:00Z",
+  "format": "VIDEO",
+  "contactName": "Recruiter",
+  "prepNotes": "Prepare intro, salary range, and why Java/Spring"
+}
+
+### Add a pending offer
+POST {{baseUrl}}/api/offers
+Content-Type: application/json
+
+{
+  "applicationId": "{{applicationId}}",
+  "grossMonthlyHuf": 980000,
+  "benefits": "Cafeteria and standard equipment",
+  "hybridPolicy": "Budapest hybrid",
+  "reviewPromise": "Salary review after probation",
+  "decision": "PENDING",
+  "decisionNotes": "Compare salary, mentoring, and engineering practices before deciding"
+}
+
+### View application history
+GET {{baseUrl}}/api/job-applications/{{applicationId}}/history
+
+### View the dashboard
+GET {{baseUrl}}/api/dashboard
+
+### Expected conflict: invalid transition from SCREENING to OFFER
+POST {{baseUrl}}/api/job-applications/{{applicationId}}/status
+Content-Type: application/json
+
+{
+  "targetStatus": "OFFER",
+  "note": "This should return 409 INVALID_STATUS_TRANSITION"
+}
+
+### List open next actions due by a date
+GET {{baseUrl}}/api/next-actions?dueBefore=2026-07-05
+
+### Get interview round
+GET {{baseUrl}}/api/interview-rounds/{{interviewRoundId}}
+
+### Get offer
+GET {{baseUrl}}/api/offers/{{offerId}}

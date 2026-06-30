@@ -305,6 +305,19 @@ class CareerOpsPostgreSqlIntegrationTest {
 		assertThat(applicationService.get(created.id()).status()).isEqualTo(ApplicationStatus.APPLIED);
 	}
 
+	@Test
+	void openApiDocumentIncludesAllResources() throws Exception {
+		mockMvc.perform(get("/v3/api-docs"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.info.title").value("CareerOps API"))
+				.andExpect(jsonPath("$.paths['/api/companies']").exists())
+				.andExpect(jsonPath("$.paths['/api/job-postings']").exists())
+				.andExpect(jsonPath("$.paths['/api/job-applications']").exists())
+				.andExpect(jsonPath("$.paths['/api/next-actions']").exists())
+				.andExpect(jsonPath("$.paths['/api/interview-rounds']").exists())
+				.andExpect(jsonPath("$.paths['/api/offers']").exists())
+				.andExpect(jsonPath("$.paths['/api/dashboard']").exists());
+	}
 
 	private void transition(UUID applicationId, ApplicationStatus status, String note) throws Exception {
 		mockMvc.perform(post("/api/job-applications/{id}/status", applicationId)

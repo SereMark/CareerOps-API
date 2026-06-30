@@ -20,3 +20,8 @@ management:
   endpoint:
     health:
       show-details: never
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
