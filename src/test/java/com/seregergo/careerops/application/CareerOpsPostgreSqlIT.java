@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = "logging.level.org.hibernate.engine.jdbc.spi.SqlExceptionHelper=OFF")
 @AutoConfigureMockMvc
 @Testcontainers
-class CareerOpsPostgreSqlIntegrationTest {
+class CareerOpsPostgreSqlIT {
 
 	@Container
 	@ServiceConnection

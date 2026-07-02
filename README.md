@@ -1,5 +1,6 @@
 # CareerOps API
 
+[![CI](https://github.com/SereMark/CareerOps-API/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SereMark/CareerOps-API/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 CareerOps API is a Java 21 / Spring Boot REST API for tracking a job search. It stores companies,
@@ -7,7 +8,7 @@ job postings, applications, follow-up tasks, interview rounds, offers, and a sma
 PostgreSQL.
 
 The code covers REST controllers, DTO validation, service-layer rules, transactions, Flyway
-migrations, PostgreSQL constraints, OpenAPI docs, Docker Compose, and automated tests.
+migrations, PostgreSQL constraints, OpenAPI docs, Docker Compose, CI, and automated tests.
 
 All sample data is fictional. Real job-search notes should stay in a local database and should not
 be committed to the repository.
@@ -19,7 +20,8 @@ be committed to the repository.
 | [Architecture notes](docs/architecture.md) | Explains the package layout, domain rules, database constraints, transactions, and current scope. |
 | [Five-minute demo](docs/demo.md) | Walks through the main workflow in Swagger UI. |
 | [HTTP request collection](docs/careerops-api.http) | Lets you run the same workflow from an IDE REST client. |
-| [PostgreSQL integration tests](src/test/java/com/seregergo/careerops/application/CareerOpsPostgreSqlIntegrationTest.java) | Shows the workflow, rollback checks, optimistic locking, and Flyway schema running against PostgreSQL. |
+| [PostgreSQL integration tests](src/test/java/com/seregergo/careerops/application/CareerOpsPostgreSqlIT.java) | Shows the workflow, rollback checks, optimistic locking, and Flyway schema running against PostgreSQL. |
+| [CI workflow](.github/workflows/ci.yml) | Shows the GitHub Actions check used for the repository. |
 
 ## Stack
 
@@ -29,7 +31,7 @@ be committed to the repository.
 | API | Spring Web, Bean Validation, `ProblemDetail`, springdoc-openapi / Swagger UI |
 | Data | PostgreSQL 17, Spring Data JPA, Hibernate, Flyway |
 | Tests | JUnit 5, Mockito, MockMvc, Testcontainers |
-| Local setup | Maven Wrapper, Docker Compose |
+| Local setup and CI | Maven Wrapper, Docker Compose, GitHub Actions |
 
 ## Run it locally
 
@@ -90,8 +92,8 @@ On Windows PowerShell:
 .\mvnw.cmd verify
 ```
 
-`test` runs the unit, service, controller, and PostgreSQL Testcontainers integration tests.
-`verify` runs the full Maven lifecycle.
+`test` runs the unit, service, and controller tests. `verify` also runs the PostgreSQL
+Testcontainers integration tests through Maven Failsafe, which is the same check used by CI.
 
 ## What the API models
 
@@ -243,12 +245,12 @@ The project currently has 53 automated tests.
 
 | Command | Runs | Docker required |
 | --- | --- | --- |
-| `./mvnw test` | Unit, service, MockMvc controller, and PostgreSQL integration tests | Yes |
-| `./mvnw verify` | Full Maven lifecycle with the same test suite | Yes |
+| `./mvnw test` | Unit, service, and MockMvc controller tests | No |
+| `./mvnw verify` | Fast tests plus PostgreSQL/Testcontainers integration tests | Yes |
 
-The integration suite covers the Flyway-migrated PostgreSQL schema, the main HTTP workflow,
-transaction rollback, optimistic locking, and job-search operations against the same database engine
-used by the application.
+The integration suite uses the `*IT` naming pattern and runs through Maven Failsafe. It covers the
+Flyway-migrated PostgreSQL schema, the main HTTP workflow, transaction rollback, optimistic locking,
+and job-search operations against the same database engine used by the application.
 
 Docker must be running before `verify`; otherwise Testcontainers cannot start PostgreSQL.
 
